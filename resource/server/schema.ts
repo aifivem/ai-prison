@@ -1,0 +1,273 @@
+import type { PanelSchema } from "@aicore-fivem/shared";
+
+const MINUTES = { type: "number", min: 0, max: 600, integer: true } as const;
+
+/** ai-prison's panel: the prison (cells, area, release point), the rules and the work spots. */
+export const prisonSchema: PanelSchema = {
+  title: "ADMIN_TITLE",
+  icon: "handcuffs",
+  files: {
+    settings: {
+      kind: "settings",
+      sync: "all",
+      sections: {
+        release: { type: "vec4" },
+        spawns: {
+          type: "list",
+          max: 30,
+          of: { type: "object", fields: { coords: { type: "vec4" } } },
+        },
+        zone: { type: "list", of: { type: "vec3" }, min: 3, max: 32 },
+        zoneHeight: { type: "number", min: 5, max: 200 },
+        maxMinutes: { type: "number", min: 1, max: 10_000, integer: true },
+        countOffline: { type: "bool" },
+        confiscate: { type: "bool" },
+        escapePenalty: MINUTES,
+        escapeAlert: { type: "bool" },
+        canteen: { type: "vec3" },
+        canteenItem: { type: "text", lookup: "item", min: 0, max: 48 },
+        canteenCount: { type: "number", min: 1, max: 10, integer: true },
+        canteenMinutes: { type: "number", min: 0, max: 240, integer: true },
+      },
+    },
+    tasks: {
+      kind: "records",
+      sync: "all",
+      labelPath: "label",
+      newRecord: {
+        label: "",
+        coords: { x: 0, y: 0, z: 0 },
+        seconds: 10,
+        minutesOff: 1,
+        cooldown: 120,
+      },
+      sections: {
+        label: { type: "text", min: 1, max: 48 },
+        coords: { type: "vec3" },
+        seconds: { type: "number", min: 3, max: 120, integer: true },
+        minutesOff: { type: "number", min: 0, max: 60, integer: true },
+        cooldown: { type: "number", min: 0, max: 3600, integer: true },
+      },
+    },
+  },
+  tabs: [
+    {
+      id: "prison",
+      file: "settings",
+      icon: "building-shield",
+      label: "ADMIN_TAB_PRISON",
+      desc: "ADMIN_TAB_PRISON_DESC",
+      cards: [
+        {
+          icon: "bed",
+          title: "ADMIN_C_CELLS",
+          desc: "ADMIN_C_CELLS_DESC",
+          fields: [
+            {
+              widget: "list",
+              path: "spawns",
+              label: "ADMIN_F_SPAWNS",
+              addLabel: "ADMIN_ADD_SPAWN",
+              max: 30,
+              newRow: { coords: { x: 0, y: 0, z: 0, heading: 0 } },
+              rows: [
+                {
+                  widget: "point",
+                  path: "coords",
+                  label: "ADMIN_F_SPAWN",
+                  heading: true,
+                  ground: true,
+                },
+              ],
+            },
+            {
+              widget: "point",
+              path: "release",
+              label: "ADMIN_F_RELEASE",
+              hint: "ADMIN_H_RELEASE",
+              heading: true,
+              ground: true,
+            },
+          ],
+        },
+        {
+          icon: "draw-polygon",
+          title: "ADMIN_C_AREA",
+          desc: "ADMIN_C_AREA_DESC",
+          fields: [
+            {
+              widget: "zone",
+              path: "zone",
+              heightPath: "zoneHeight",
+              label: "ADMIN_F_ZONE",
+              hint: "ADMIN_H_ZONE",
+            },
+            {
+              widget: "number",
+              path: "zoneHeight",
+              label: "ADMIN_F_ZONE_HEIGHT",
+              hint: "ADMIN_H_ZONE_HEIGHT",
+              min: 5,
+              max: 200,
+              unit: "m",
+            },
+          ],
+        },
+        {
+          icon: "utensils",
+          title: "ADMIN_C_CANTEEN",
+          desc: "ADMIN_C_CANTEEN_DESC",
+          fields: [
+            {
+              widget: "point",
+              path: "canteen",
+              label: "ADMIN_F_CANTEEN",
+              ground: true,
+            },
+            {
+              widget: "text",
+              lookup: "item",
+              path: "canteenItem",
+              label: "ADMIN_F_CANTEEN_ITEM",
+              hint: "ADMIN_H_CANTEEN_ITEM",
+              placeholder: "ADMIN_P_CANTEEN_ITEM",
+            },
+            {
+              widget: "number",
+              path: "canteenCount",
+              label: "ADMIN_F_CANTEEN_COUNT",
+              min: 1,
+              max: 10,
+            },
+            {
+              widget: "number",
+              path: "canteenMinutes",
+              label: "ADMIN_F_CANTEEN_MINUTES",
+              hint: "ADMIN_H_CANTEEN_MINUTES",
+              min: 0,
+              max: 240,
+              unit: "min",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "rules",
+      file: "settings",
+      icon: "scale-balanced",
+      label: "ADMIN_TAB_RULES",
+      desc: "ADMIN_TAB_RULES_DESC",
+      cards: [
+        {
+          icon: "gavel",
+          title: "ADMIN_C_SENTENCE",
+          desc: "ADMIN_C_SENTENCE_DESC",
+          fields: [
+            {
+              widget: "number",
+              path: "maxMinutes",
+              label: "ADMIN_F_MAX_MINUTES",
+              hint: "ADMIN_H_MAX_MINUTES",
+              min: 1,
+              max: 10_000,
+              unit: "min",
+            },
+            {
+              widget: "switch",
+              path: "countOffline",
+              label: "ADMIN_F_COUNT_OFFLINE",
+              hint: "ADMIN_H_COUNT_OFFLINE",
+            },
+            {
+              widget: "switch",
+              path: "confiscate",
+              label: "ADMIN_F_CONFISCATE",
+              hint: "ADMIN_H_CONFISCATE",
+            },
+          ],
+        },
+        {
+          icon: "person-running",
+          title: "ADMIN_C_ESCAPE",
+          desc: "ADMIN_C_ESCAPE_DESC",
+          fields: [
+            {
+              widget: "number",
+              path: "escapePenalty",
+              label: "ADMIN_F_ESCAPE_PENALTY",
+              hint: "ADMIN_H_ESCAPE_PENALTY",
+              min: 0,
+              max: 600,
+              unit: "min",
+            },
+            {
+              widget: "switch",
+              path: "escapeAlert",
+              label: "ADMIN_F_ESCAPE_ALERT",
+              hint: "ADMIN_H_ESCAPE_ALERT",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "tasks",
+      file: "tasks",
+      icon: "screwdriver-wrench",
+      label: "ADMIN_TAB_TASKS",
+      desc: "ADMIN_TAB_TASKS_DESC",
+      createLabel: "ADMIN_NEW_TASK",
+      deleteLabel: "ADMIN_DELETE_TASK",
+      deleteDesc: "ADMIN_DELETE_TASK_DESC",
+      cards: [
+        {
+          icon: "screwdriver-wrench",
+          title: "ADMIN_C_TASK",
+          desc: "ADMIN_C_TASK_DESC",
+          fields: [
+            {
+              widget: "text",
+              path: "label",
+              label: "ADMIN_F_TASK_LABEL",
+              placeholder: "ADMIN_P_TASK_LABEL",
+            },
+            {
+              widget: "point",
+              path: "coords",
+              label: "ADMIN_F_TASK_COORDS",
+              hint: "ADMIN_H_TASK_COORDS",
+              ground: true,
+            },
+            {
+              widget: "number",
+              path: "seconds",
+              label: "ADMIN_F_TASK_SECONDS",
+              min: 3,
+              max: 120,
+              unit: "s",
+            },
+            {
+              widget: "number",
+              path: "minutesOff",
+              label: "ADMIN_F_TASK_MINUTES",
+              hint: "ADMIN_H_TASK_MINUTES",
+              min: 0,
+              max: 60,
+              unit: "min",
+            },
+            {
+              widget: "number",
+              path: "cooldown",
+              label: "ADMIN_F_TASK_COOLDOWN",
+              hint: "ADMIN_H_TASK_COOLDOWN",
+              min: 0,
+              max: 3600,
+              unit: "s",
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};

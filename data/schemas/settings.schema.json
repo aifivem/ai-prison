@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ai-prison/data/settings.json",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "This file's JSON Schema (for editors)."
+    },
+    "release": {
+      "description": "Release point: Where a player stands after the sentence ends (outside the gate).",
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "z",
+        "heading"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        },
+        "heading": {
+          "type": "number"
+        }
+      }
+    },
+    "spawns": {
+      "description": "Cell points",
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "properties": {
+          "coords": {
+            "description": "Cell point",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z",
+              "heading"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "z": {
+                "type": "number"
+              },
+              "heading": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "coords"
+        ]
+      }
+    },
+    "zone": {
+      "description": "Area corners: Walk around the prison walls and add a corner at each turn (at least three).",
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "required": [
+          "x",
+          "y",
+          "z"
+        ],
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "zoneHeight": {
+      "description": "Area height: Metres above and below the corners that still count as inside.",
+      "type": "number",
+      "minimum": 5,
+      "maximum": 200
+    },
+    "maxMinutes": {
+      "description": "Longest sentence: Longer sentences from police or admins are cut to this.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "countOffline": {
+      "description": "Count time offline: On: minutes pass while the player is away too. Off: only time in the game counts.",
+      "type": "boolean"
+    },
+    "confiscate": {
+      "description": "Take items at the gate: On: the inventory is taken when jailed and given back at release.",
+      "type": "boolean"
+    },
+    "escapePenalty": {
+      "description": "Extra time for an escape: Minutes added each time a jailed player is found outside the area.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 600
+    },
+    "escapeAlert": {
+      "description": "Alert the police: Sends a police alert with the escape position.",
+      "type": "boolean"
+    },
+    "canteen": {
+      "description": "Canteen counter",
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      }
+    },
+    "canteenItem": {
+      "description": "Meal item: The item handed out; empty closes the canteen.",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 48
+    },
+    "canteenCount": {
+      "description": "Items per meal",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "canteenMinutes": {
+      "description": "Wait between meals: Minutes before the same character gets another meal.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 240
+    }
+  },
+  "required": [
+    "release",
+    "spawns",
+    "zone",
+    "zoneHeight",
+    "maxMinutes",
+    "countOffline",
+    "confiscate",
+    "escapePenalty",
+    "escapeAlert",
+    "canteen",
+    "canteenItem",
+    "canteenCount",
+    "canteenMinutes"
+  ]
+}

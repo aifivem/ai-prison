@@ -1,0 +1,20 @@
+{
+  "PRISON_JAILED": "{0} dakika hapis cezası aldın.",
+  "PRISON_SERVED": "Cezanı tamamladın. Artık özgürsün.",
+  "PRISON_RELEASED": "Hapisten çıkarıldın.",
+  "PRISON_TIME_LEFT": "Kalan ceza: {0} dakika.",
+  "PRISON_ESCAPE_CAUGHT": "Hapisten kaçarken yakalandın: {0} dakika eklendi.",
+  "PRISON_PROMPT_WORK": "Çalış: {0}",
+  "PRISON_PROMPT_CANTEEN": "Yemek al",
+  "PRISON_WORKING": "Çalışıyorsun",
+  "PRISON_WORK_DONE": "Aferin. Kalan ceza: {0} dakika.",
+  "PRISON_CANTEEN_DONE": "Yemeğini aldın.",
+  "PRISON_RADIAL": "Ceza",
+  "PRISON_ERR_NOT_JAILED": "Hapiste değilsin.",
+  "PRISON_ERR_FAR": "Çok uzaktasın.",
+  "PRISON_ERR_TIRED": "Bu kadar çabuk olmaz.",
+  "PRISON_ERR_CLOSED": "Kantin kapalı.",
+  "PRISON_ERR_FULL": "Taşıyamazsın.",
+  "ALERT_ESCAPE_TITLE": "Hapishane firarı",
+  "ALERT_ESCAPE_MESSAGE": "Bir mahkum hapishane duvarlarının dışında görüldü."
+}

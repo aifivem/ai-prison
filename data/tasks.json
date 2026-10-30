@@ -1,0 +1,80 @@
+{
+  "$schema": "./schemas/tasks.schema.json",
+  "fusebox_1": {
+    "label": "Fuse box 1",
+    "coords": {
+      "x": 1761.46,
+      "y": 2540.41,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  },
+  "fusebox_2": {
+    "label": "Fuse box 2",
+    "coords": {
+      "x": 1718.54,
+      "y": 2527.802,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  },
+  "fusebox_3": {
+    "label": "Fuse box 3",
+    "coords": {
+      "x": 1700.199,
+      "y": 2474.811,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  },
+  "fusebox_4": {
+    "label": "Fuse box 4",
+    "coords": {
+      "x": 1664.827,
+      "y": 2501.58,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  },
+  "fusebox_5": {
+    "label": "Fuse box 5",
+    "coords": {
+      "x": 1621.622,
+      "y": 2509.302,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  },
+  "fusebox_6": {
+    "label": "Fuse box 6",
+    "coords": {
+      "x": 1627.936,
+      "y": 2538.393,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  },
+  "fusebox_7": {
+    "label": "Fuse box 7",
+    "coords": {
+      "x": 1625.1,
+      "y": 2575.988,
+      "z": 45.56
+    },
+    "seconds": 10,
+    "minutesOff": 1,
+    "cooldown": 120
+  }
+}
