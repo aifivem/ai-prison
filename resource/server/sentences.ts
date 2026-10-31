@@ -4,6 +4,7 @@ import {
   dispatch,
   every,
   inventory,
+  mdt,
   notify,
   online,
   PlayerMap,
@@ -91,6 +92,13 @@ class Sentences {
       source: by || undefined,
       target: source,
       metadata: { minutes: total },
+    });
+    mdt.record({
+      kind: "jail",
+      target: source,
+      by: by || undefined,
+      title: Locale("PRISON_RECORD_JAIL", total),
+      minutes: total,
     });
     return true;
   }

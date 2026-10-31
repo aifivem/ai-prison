@@ -57,6 +57,7 @@
   "ADMIN_F_TASK_COOLDOWN": "Wait before working here again",
   "ADMIN_H_TASK_COOLDOWN": "Seconds before the same character can work at this spot again.",
   "PRISON_JAILED": "You were sent to prison for {0} minutes.",
+  "PRISON_RECORD_JAIL": "Prison sentence of {0} minutes",
   "PRISON_SERVED": "You served your sentence. You are free.",
   "PRISON_RELEASED": "You were released from prison.",
   "PRISON_TIME_LEFT": "Sentence left: {0} minutes.",
