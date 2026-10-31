@@ -1,6 +1,6 @@
 name 'ai-prison'
 author 'TGIANN'
-version '0.1.0'
+version '0.1.0' -- x-release-please-version
 license 'GPL-3.0-only'
 description 'Jail sentences counted by the server: confiscated items, prison work that shortens the sentence, canteen, escape check, release point'
 repository 'https://github.com/aifivem/ai-prison'
