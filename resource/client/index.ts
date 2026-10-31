@@ -5,7 +5,6 @@ import {
   onServerEvent,
   player,
   Points,
-  progress,
   radial,
   resourceExport,
 } from "@aicore-fivem/lib/client";
@@ -49,24 +48,9 @@ function placeCanteen(): void {
 placeCanteen();
 world.onChange("settings", placeCanteen);
 
+// The server runs the progress bar and takes the minutes off when it ran out.
 async function doWork(id: string): Promise<void> {
-  const started = await callAction(EVENTS.workStart, [id], FAR);
-  if (
-    !started ||
-    typeof started.token !== "number" ||
-    typeof started.seconds !== "number"
-  )
-    return;
-  const done = await progress({
-    label: Locale("PRISON_WORKING"),
-    duration: started.seconds * 1000,
-    scenario: "WORLD_HUMAN_HAMMERING",
-    disable: { move: true, combat: true },
-  });
-  if (!done) return;
-  const result = await callAction(EVENTS.workDone, [started.token], FAR);
-  if (result && typeof result.minutes === "number" && result.minutes > 0)
-    notify(Locale("PRISON_WORK_DONE", result.minutes), "success");
+  await callAction(EVENTS.workStart, [id], FAR);
 }
 
 async function eat(): Promise<void> {

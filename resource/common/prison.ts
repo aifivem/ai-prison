@@ -18,10 +18,8 @@ export const EVENTS = {
   state: "ai-prison:client:state",
   /** Server -> client: (point: Vec4) teleport (into a cell, back inside after an escape, out at release). */
   move: "ai-prison:client:move",
-  /** Action (ActionResult): (taskId) starts prison work: `{ token, seconds }`. */
+  /** Action (ActionResult): (taskId) prison work: the server runs the progress bar, then takes minutes off. */
   workStart: "ai-prison:workStart",
-  /** Action (ActionResult): (token) the work is done: `{ minutes }` left. */
-  workDone: "ai-prison:workDone",
   /** Action (ActionResult): () a meal from the canteen. */
   canteen: "ai-prison:canteen",
 } as const;

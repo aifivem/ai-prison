@@ -47,10 +47,6 @@ function record(value) {
 function readFinite(value) {
 	return typeof value == "number" && Number.isFinite(value) ? value : null;
 }
-function readInt(value, min, max) {
-	return Number.isInteger(value) && value >= min && value <= max ? value : null;
-}
-const readId = (value) => readInt(value, 1, 2147483647);
 function readText(value, max) {
 	if (typeof value != "string") return null;
 	let text = value.trim();
@@ -98,7 +94,7 @@ function readVec4(value) {
 const fail = (error) => ({
 	ok: !1,
 	error
-}), isPublic = (rule) => rule.jobs.length === 0 && rule.gangs.length === 0;
+}), pickRandom = (list) => list[Math.floor(Math.random() * list.length)], isPublic = (rule) => rule.jobs.length === 0 && rule.gangs.length === 0;
 // ../../../packages/lib/src/shared/zone.ts
 function zoneContains(shape, x, y, z) {
 	switch (shape.type) {
@@ -315,6 +311,8 @@ const CORE = {
 	vehicleTypeCallback: "ai-core:vehicleType",
 	interactionStateKey: "ai:interaction",
 	pvpStateKey: "ai:pvp",
+	medicalStateKey: "ai:medical",
+	clientDeadEvent: "ai-core:client:dead",
 	charactersCallback: "ai-core:characters",
 	createCharacterCallback: "ai-core:createCharacter",
 	deleteCharacterCallback: "ai-core:deleteCharacter",
@@ -457,10 +455,25 @@ function onClientCallback(name, first, second) {
 	});
 }
 const pending = new Map();
+let nextId = 0;
 onNet(responseEvent(resource$1), (id, ok, result) => {
 	let entry = typeof id == "number" ? pending.get(id) : void 0;
 	entry && entry.source === Number(globalThis.source) && (pending.delete(id), clearTimeout(entry.timer), ok === !0 ? entry.resolve(result) : entry.reject(Error("client callback failed")));
 });
+function triggerClientCallback(name, source, args = [], timeoutMs = 3e4) {
+	let id = ++nextId;
+	return new Promise((resolve, reject) => {
+		let timer = setTimeout(() => {
+			pending.delete(id), reject(Error(`client callback ${name} timed out for ${source}`));
+		}, timeoutMs);
+		pending.set(id, {
+			source,
+			resolve,
+			reject,
+			timer
+		}), emitNet(requestEvent(name), source, resource$1, id, ...args);
+	});
+}
 // ../../../packages/lib/src/server/admin/patch.ts
 function toPatch(value) {
 	if (!isRecord(value) || typeof value.file != "string") return null;
@@ -1043,6 +1056,9 @@ var OnlinePlayers = class {
 	character(source) {
 		return this.start(), this.players.get(source)?.character ?? null;
 	}
+	charId(source) {
+		return this.start(), this.players.get(source)?.character.id;
+	}
 	name(source, options = {}) {
 		let c = this.character(source);
 		return c ? `${c.firstname} ${c.lastname}` : options.fallback === !1 ? "" : GetPlayerName(String(source));
@@ -1150,19 +1166,19 @@ function onCharacter(handlers) {
 		} catch (error) {
 			log$5.error(`character loaded handler failed for ${source}`, error);
 		}
-	}, end = (source, charId) => {
+	}, end = (source, charId, reason) => {
 		if (live.delete(source)) try {
-			handlers.unloaded?.(source, charId);
+			handlers.unloaded?.(source, charId, reason);
 		} catch (error) {
 			log$5.error(`character unloaded handler failed for ${source}`, error);
 		}
 	};
 	on(CORE.playerLoadedEvent, (source, character) => {
 		let previous = live.get(source);
-		previous !== void 0 && end(source, previous), deliver(source, character);
-	}), on(CORE.playerUnloadedEvent, (source, charId) => end(source, charId)), onDropped((source) => setImmediate(() => {
+		previous !== void 0 && end(source, previous, "switch"), deliver(source, character);
+	}), on(CORE.playerUnloadedEvent, (source, charId, reason) => end(source, charId, reason === "dropped" ? "dropped" : "switch")), onDropped((source) => setImmediate(() => {
 		let charId = live.get(source);
-		charId !== void 0 && end(source, charId);
+		charId !== void 0 && end(source, charId, "dropped");
 	})), setImmediate(() => {
 		for (let source of online.sources()) {
 			if (live.has(source)) continue;
@@ -1171,42 +1187,23 @@ function onCharacter(handlers) {
 		}
 	});
 }
-// ../../../packages/lib/src/server/pending.ts
-var PendingActions = class {
-	actions = new PlayerMap();
-	minRatio;
-	next = 0;
-	constructor(options = {}) {
-		this.minRatio = options.minRatio ?? .8, on(CORE.playerUnloadedEvent, (source) => this.actions.delete(source));
-	}
-	start(source, data, durationMs) {
-		return this.next = this.next >= 2147483647 ? 1 : this.next + 1, this.actions.set(source, {
-			token: this.next,
-			data,
-			startedAt: GetGameTimer(),
-			durationMs
-		}), this.next;
-	}
-	take(source, token) {
-		let action = this.actions.get(source);
-		return !action || action.token !== token ? null : (this.actions.delete(source), GetGameTimer() - action.startedAt >= action.durationMs * this.minRatio ? action.data : null);
-	}
-	peek(source) {
-		return this.actions.get(source)?.data ?? null;
-	}
-	cancel(source) {
-		this.actions.delete(source);
-	}
-	get size() {
-		return this.actions.size;
-	}
-};
 // ../../../packages/lib/src/server/progressFor.ts
 const running = new PlayerMap({ onDrop: (_source, settle) => settle(!1) });
 on(CORE.playerUnloadedEvent, (source) => {
 	let settle = running.get(source);
 	settle && settle(!1);
 });
+function progressFor(source, options) {
+	let previous = running.get(source);
+	previous && (previous(!1), emitNet(LIB_UI.progressForCancelEvent, source));
+	let { minRatio = .8, ...bar } = options, startedAt = GetGameTimer();
+	return new Promise((resolve) => {
+		let done = !1, settle = (ok) => {
+			done || (done = !0, running.get(source) === settle && running.delete(source), resolve(ok));
+		};
+		running.set(source, settle), triggerClientCallback(LIB_UI.progressForCallback, source, [bar], bar.duration + 15e3).then((answer) => settle(answer === !0 && GetGameTimer() - startedAt >= bar.duration * minRatio), () => settle(!1));
+	});
+}
 // ../../../packages/lib/src/server/definitions.ts
 const core$11 = resourceExport("ai-core");
 new class {
@@ -1469,7 +1466,6 @@ const EVENTS = {
 	state: "ai-prison:client:state",
 	move: "ai-prison:client:move",
 	workStart: "ai-prison:workStart",
-	workDone: "ai-prison:workDone",
 	canteen: "ai-prison:canteen"
 }, META = {
 	minutes: "injail",
@@ -1855,7 +1851,7 @@ const prisonSchema = {
 	}
 	toCell(source) {
 		let spawns = settings.value.spawns;
-		emitNet(EVENTS.move, source, spawns[Math.floor(Math.random() * spawns.length)]);
+		emitNet(EVENTS.move, source, pickRandom(spawns));
 	}
 	jail(source, minutes, by = 0) {
 		if (!online.character(source)) return !1;
@@ -1926,7 +1922,7 @@ const prisonSchema = {
 }();
 every(6e4, () => sentences.tick(), { name: "sentences" }), every(1e4, () => sentences.checkEscapes(), { name: "escapes" });
 // resource/server/index.ts
-const guards = [hasCharacter()], work = new PendingActions(), cooldowns = new KeyedCooldowns();
+const guards = [hasCharacter()], cooldowns = new KeyedCooldowns();
 onCharacter({
 	loaded: (source) => sentences.load(source),
 	unloaded: (source) => sentences.unload(source)
@@ -1934,27 +1930,28 @@ onCharacter({
 	key === META.minutes && sentences.external(source, value);
 }), onClientCallback(EVENTS.workStart, {
 	args: oneArg((v) => readText(v, 64)),
-	guards,
-	lock: !0
+	guards
 }, (source, id) => {
-	let task = tasks.get(id), charId = online.character(source)?.id;
-	return !task || charId === void 0 || sentences.minutesOf(source) <= 0 ? fail("PRISON_ERR_NOT_JAILED") : isNear(source, task.coords, 3) ? cooldowns.ready(`${charId}:${id}`) ? {
-		ok: !0,
-		token: work.start(source, task, task.seconds * 1e3),
-		seconds: task.seconds
-	} : fail("PRISON_ERR_TIRED") : fail("PRISON_ERR_FAR");
-}), onClientCallback(EVENTS.workDone, {
-	args: oneArg(readId),
-	guards,
-	lock: !0
-}, (source, token) => {
-	let task = work.take(source, token), charId = online.character(source)?.id;
-	return !task || charId === void 0 || !isNear(source, task.coords, 5) ? fail("PRISON_ERR_FAR") : (cooldowns.start(`${charId}:${task.id}`, task.cooldown * 1e3), {
-		ok: !0,
-		minutes: sentences.add(source, -task.minutesOff)
-	});
-}), onClientCallback(EVENTS.canteen, (source) => {
-	let s = settings.value, charId = online.character(source)?.id;
+	let task = tasks.get(id), charId = online.charId(source);
+	return !task || charId === void 0 || sentences.minutesOf(source) <= 0 ? fail("PRISON_ERR_NOT_JAILED") : isNear(source, task.coords, 3) ? cooldowns.ready(`${charId}:${id}`) ? (work(source, task), { ok: !0 }) : fail("PRISON_ERR_TIRED") : fail("PRISON_ERR_FAR");
+});
+async function work(source, task) {
+	let done = await progressFor(source, {
+		label: Locale("PRISON_WORKING"),
+		duration: task.seconds * 1e3,
+		scenario: "WORLD_HUMAN_HAMMERING",
+		disable: {
+			move: !0,
+			combat: !0
+		}
+	}), charId = online.charId(source);
+	if (!done || charId === void 0 || sentences.minutesOf(source) <= 0 || !isNear(source, task.coords, 5)) return;
+	cooldowns.start(`${charId}:${task.id}`, task.cooldown * 1e3);
+	let minutes = sentences.add(source, -task.minutesOff);
+	minutes > 0 && notify(source, Locale("PRISON_WORK_DONE", minutes), "success");
+}
+onClientCallback(EVENTS.canteen, (source) => {
+	let s = settings.value, charId = online.charId(source);
 	return charId === void 0 || sentences.minutesOf(source) <= 0 ? fail("PRISON_ERR_NOT_JAILED") : s.canteenItem ? isNear(source, s.canteen, 3) ? cooldowns.ready(`${charId}:canteen`) ? inventory.addItem(source, s.canteenItem, s.canteenCount) ? (cooldowns.start(`${charId}:canteen`, s.canteenMinutes * 6e4), { ok: !0 }) : fail("PRISON_ERR_FULL") : fail("PRISON_ERR_TIRED") : fail("PRISON_ERR_FAR") : fail("PRISON_ERR_CLOSED");
 }, {
 	guards,

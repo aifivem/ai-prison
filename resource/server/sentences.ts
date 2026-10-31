@@ -8,7 +8,7 @@ import {
   online,
   PlayerMap,
 } from "@aicore-fivem/lib/server";
-import { isRecord, zoneContains } from "@aicore-fivem/lib/shared";
+import { isRecord, pickRandom, zoneContains } from "@aicore-fivem/lib/shared";
 import type { ItemMetadata } from "@aicore-fivem/shared";
 import { Locale } from "common";
 import { EVENTS, META } from "common/prison";
@@ -62,11 +62,7 @@ class Sentences {
 
   private toCell(source: number): void {
     const spawns = settings.value.spawns;
-    emitNet(
-      EVENTS.move,
-      source,
-      spawns[Math.floor(Math.random() * spawns.length)],
-    );
+    emitNet(EVENTS.move, source, pickRandom(spawns));
   }
 
   /** Puts (or keeps) the player in prison for `minutes` (capped by the panel). */
