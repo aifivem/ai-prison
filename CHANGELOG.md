@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/aifivem/ai-prison/compare/v0.2.0...v0.2.1) (2026-10-31)
+
+
+### Miscellaneous Chores
+
+* rebuild with the current lib ([a872a15](https://github.com/aifivem/ai-prison/commit/a872a150a90c9b0ee5436b07dcbcc9c9d592df3c))
+
 ## [0.2.0](https://github.com/aifivem/ai-prison/compare/v0.1.0...v0.2.0) (2026-10-31)
 
 
