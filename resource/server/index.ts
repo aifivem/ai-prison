@@ -37,7 +37,7 @@ onClientCallback(
   EVENTS.workStart,
   { args: oneArg((v) => readText(v, 64)), guards, lock: true },
   (source, id): ActionResult<{ token: number; seconds: number }> => {
-    const task = tasks.value.get(id);
+    const task = tasks.get(id);
     const charId = online.character(source)?.id;
     if (!task || charId === undefined || sentences.minutesOf(source) <= 0)
       return fail("PRISON_ERR_NOT_JAILED");

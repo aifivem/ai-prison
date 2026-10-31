@@ -2,7 +2,6 @@ import {
   int,
   num,
   polyFromCorners,
-  readRecords,
   readVec3,
   readVec4,
   record,
@@ -95,16 +94,16 @@ export interface Task {
   cooldown: number;
 }
 
-export const readTasks = (value: unknown): Map<string, Task> =>
-  readRecords(value, (id, v) => {
-    const coords = readVec3(v.coords);
-    if (!coords) return null;
-    return {
-      id,
-      label: str(v.label, id, 48),
-      coords,
-      seconds: int(v.seconds, 10, 3, 120),
-      minutesOff: int(v.minutesOff, 1, 0, 60),
-      cooldown: int(v.cooldown, 120, 0, 3600),
-    };
-  });
+/** One work spot record (`records` / `RecordObjects` reader); null without coords. */
+export function readTask(id: string, v: Record<string, unknown>): Task | null {
+  const coords = readVec3(v.coords);
+  if (!coords) return null;
+  return {
+    id,
+    label: str(v.label, id, 48),
+    coords,
+    seconds: int(v.seconds, 10, 3, 120),
+    minutesOff: int(v.minutesOff, 1, 0, 60),
+    cooldown: int(v.cooldown, 120, 0, 3600),
+  };
+}

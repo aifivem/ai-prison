@@ -9,31 +9,34 @@ import {
   radial,
   resourceExport,
 } from "@aicore-fivem/lib/client";
-import { readVec4, waitFor } from "@aicore-fivem/lib/shared";
+import { readVec4, RecordObjects, waitFor } from "@aicore-fivem/lib/shared";
 import { Locale } from "common";
-import { EVENTS, readSettings, readTasks } from "common/prison";
+import { EVENTS, readSettings, readTask } from "common/prison";
 
 const core = resourceExport("ai-core");
 const world = new AdminWorld(["settings", "tasks"]);
 const settings = world.view("settings", readSettings);
-const tasks = world.view("tasks", readTasks);
 const FAR = { fallback: "PRISON_ERR_FAR" };
 /** Minutes of sentence left, as the server says (0 = free). */
 let minutes = 0;
 const jailed = () => minutes > 0;
 
-/** Work spots and the canteen, shown only to jailed players. */
+/** Work spots (one record's point rebuilt per panel edit) and the canteen, shown only to jailed players. */
 const points = new Points();
-function rebuild(): void {
-  points.clear();
-  for (const task of tasks.value.values())
-    points.add(`task:${task.id}`, {
-      coords: task.coords,
-      label: Locale("PRISON_PROMPT_WORK", task.label),
-      icon: "screwdriver-wrench",
-      canShow: jailed,
-      onPressed: () => doWork(task.id),
-    });
+new RecordObjects(world, "tasks", readTask, (id, task) => {
+  points.add(`task:${id}`, {
+    coords: task.coords,
+    label: Locale("PRISON_PROMPT_WORK", task.label),
+    icon: "screwdriver-wrench",
+    canShow: jailed,
+    onPressed: () => doWork(id),
+  });
+  return () => points.remove(`task:${id}`);
+});
+
+/** The canteen point follows the settings. */
+function placeCanteen(): void {
+  points.remove("canteen");
   if (settings.value.canteenItem)
     points.add("canteen", {
       coords: settings.value.canteen,
@@ -43,9 +46,8 @@ function rebuild(): void {
       onPressed: () => eat(),
     });
 }
-rebuild();
-world.onChange("settings", rebuild);
-world.onChange("tasks", rebuild);
+placeCanteen();
+world.onChange("settings", placeCanteen);
 
 async function doWork(id: string): Promise<void> {
   const started = await callAction(EVENTS.workStart, [id], FAR);
