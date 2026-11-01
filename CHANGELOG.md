@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/aifivem/ai-prison/compare/v0.2.1...v0.2.2) (2026-11-01)
+
+
+### Code Refactoring
+
+* feature folders, side entries that only import, panel schema per tab ([2c637ef](https://github.com/aifivem/ai-prison/commit/2c637ef1ef0de9a75539f57b17040e39a0d03b68))
+
 ## [0.2.1](https://github.com/aifivem/ai-prison/compare/v0.2.0...v0.2.1) (2026-10-31)
 
 
