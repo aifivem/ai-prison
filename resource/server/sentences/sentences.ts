@@ -2,39 +2,17 @@ import {
   aiLog,
   coordsOf,
   dispatch,
-  every,
   inventory,
   mdt,
   notify,
   online,
   PlayerMap,
 } from "@aicore-fivem/lib/server";
-import { isRecord, pickRandom, zoneContains } from "@aicore-fivem/lib/shared";
-import type { ItemMetadata } from "@aicore-fivem/shared";
+import { pickRandom, zoneContains } from "@aicore-fivem/lib/shared";
 import { Locale } from "common";
 import { EVENTS, META } from "common/prison";
-import { core, log, settings } from "./content";
-
-interface StoredItem {
-  name: string;
-  count: number;
-  metadata: ItemMetadata;
-}
-
-const toItems = (value: unknown): StoredItem[] =>
-  Array.isArray(value)
-    ? value.flatMap((v) =>
-        isRecord(v) && typeof v.name === "string" && typeof v.count === "number"
-          ? [
-              {
-                name: v.name,
-                count: v.count,
-                metadata: isRecord(v.metadata) ? v.metadata : {},
-              },
-            ]
-          : [],
-      )
-    : [];
+import { core, log, settings } from "../content";
+import { toItems } from "./storedItems";
 
 /**
  * Sentences of the loaded characters, counted by the server only: minutes left in ai-core's metadata (QB's
@@ -197,5 +175,3 @@ class Sentences {
 }
 
 export const sentences = new Sentences();
-every(60_000, () => sentences.tick(), { name: "sentences" });
-every(10_000, () => sentences.checkEscapes(), { name: "escapes" });

@@ -23,5 +23,5 @@ Jail sentences counted by the server: police (ai-police "Send to prison") or adm
 
 ## Entry points
 
-- Sentences, release, escapes: `resource/server/sentences.ts`; work, canteen, exports, commands: `resource/server/index.ts`; panel `server/schema.ts`.
-- Client points, teleports, time notifications: `resource/client/index.ts`.
+- Sentences, release, escapes: `resource/server/sentences/sentences.ts` (confiscated items `storedItems.ts`), with its character hooks, exports, commands and timers in `sentences/index.ts`; work and canteen: `resource/server/work.ts`; panel `server/content.ts` + `server/schema/` (one file per tab, `index.ts` puts them together).
+- Client: time left, teleports, notifications and the radial entry `resource/client/sentence.ts`; work and canteen points `client/work.ts` (the shared `Points` in `client/points.ts`).
