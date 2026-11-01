@@ -1,6 +1,6 @@
 {
   "name": "ai-prison",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "description": "Jail sentences counted by the server: confiscated items, prison work that shortens the sentence, canteen, escape check, release point",
   "license": "GPL-3.0-only",
