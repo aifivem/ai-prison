@@ -4,8 +4,8 @@ import {
   player,
   radial,
   resourceExport,
-} from "@aicore-fivem/lib/client";
-import { readVec4, waitFor } from "@aicore-fivem/lib/shared";
+} from "@aifivem/lib/client";
+import { readVec4, waitFor } from "@aifivem/lib/shared";
 import { Locale } from "common";
 import { EVENTS } from "common/prison";
 import { points } from "./points";

@@ -1,4 +1,4 @@
-import type { PanelSchema } from "@aicore-fivem/shared";
+import type { PanelSchema } from "@aifivem/shared";
 import { settingsFile, prisonTab } from "./prison";
 import { rulesTab } from "./rules";
 import { tasksFile, tasksTab } from "./tasks";

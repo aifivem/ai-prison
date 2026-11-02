@@ -7,8 +7,8 @@ import {
   notify,
   online,
   PlayerMap,
-} from "@aicore-fivem/lib/server";
-import { pickRandom, zoneContains } from "@aicore-fivem/lib/shared";
+} from "@aifivem/lib/server";
+import { pickRandom, zoneContains } from "@aifivem/lib/shared";
 import { Locale } from "common";
 import { EVENTS, META } from "common/prison";
 import { core, log, settings } from "../content";

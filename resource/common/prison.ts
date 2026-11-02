@@ -9,7 +9,7 @@ import {
   type Vec3,
   type Vec4,
   type ZoneShape,
-} from "@aicore-fivem/lib/shared";
+} from "@aifivem/lib/shared";
 
 /** ai-prison's contracts and panel content. No natives. */
 

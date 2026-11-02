@@ -3,8 +3,8 @@ import {
   every,
   onCharacter,
   registerExport,
-} from "@aicore-fivem/lib/server";
-import { CORE } from "@aicore-fivem/shared";
+} from "@aifivem/lib/server";
+import { CORE } from "@aifivem/shared";
 import { Locale } from "common";
 import { META } from "common/prison";
 import { sentences } from "./sentences";

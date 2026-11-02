@@ -1,4 +1,4 @@
-import type { TabSpec } from "@aicore-fivem/shared";
+import type { TabSpec } from "@aifivem/shared";
 
 export const rulesTab: TabSpec = {
   id: "rules",

@@ -1,4 +1,4 @@
-import type { FileSpec, TabSpec } from "@aicore-fivem/shared";
+import type { FileSpec, TabSpec } from "@aifivem/shared";
 
 export const tasksFile: FileSpec = {
   kind: "records",

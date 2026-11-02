@@ -7,9 +7,9 @@ import {
   notify,
   online,
   progressFor,
-} from "@aicore-fivem/lib/server";
-import { fail, oneArg, readText } from "@aicore-fivem/lib/shared";
-import type { ActionResult } from "@aicore-fivem/shared";
+} from "@aifivem/lib/server";
+import { fail, oneArg, readText } from "@aifivem/lib/shared";
+import type { ActionResult } from "@aifivem/shared";
 import { Locale } from "common";
 import { EVENTS, type Task } from "common/prison";
 import { settings, tasks } from "./content";
