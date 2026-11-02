@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.4](https://github.com/aifivem/ai-prison/compare/v0.2.3...v0.2.4) (2026-11-02)
+
+
+### Documentation
+
+* install from the release zip ([c295663](https://github.com/aifivem/ai-prison/commit/c295663bd93d0b7bbd86c5cbf38958954fcbf222))
+
+
+### Miscellaneous Chores
+
+* build files are no longer in git, the release zip carries them ([3bb9faf](https://github.com/aifivem/ai-prison/commit/3bb9faf8799c9160d31ef017d1f451d6658aa350))
+
 ## [0.2.3](https://github.com/aifivem/ai-prison/compare/v0.2.2...v0.2.3) (2026-11-02)
 
 
