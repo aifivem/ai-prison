@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/aifivem/ai-prison/compare/v0.2.2...v0.2.3) (2026-11-02)
+
+
+### Code Refactoring
+
+* import the shared packages from [@aifivem](https://github.com/aifivem) ([ea8e1da](https://github.com/aifivem/ai-prison/commit/ea8e1dac16288a881f120b42098e07bd5a3ba22d))
+
 ## [0.2.2](https://github.com/aifivem/ai-prison/compare/v0.2.1...v0.2.2) (2026-11-01)
 
 
